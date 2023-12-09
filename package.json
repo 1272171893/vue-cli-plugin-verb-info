@@ -9,5 +9,8 @@
     "verb info"
   ],
   "license": "MIT",
-  "scripts": {}
+  "scripts": {},
+  "publicConfig": {
+    "registry": "http://registry.npmjs.org/"
+  } 
 }
