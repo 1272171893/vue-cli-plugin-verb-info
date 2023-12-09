@@ -1,6 +1,6 @@
 {
   "name": "vue-cli-plugin-verb-info",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "description": "Vue CLI plugin that provides version info feature",
   "main": "./src/index.js",
   "keywords": [
