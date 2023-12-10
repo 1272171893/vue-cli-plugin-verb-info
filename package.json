@@ -1,6 +1,6 @@
 {
   "name": "vue-cli-plugin-verb-info",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "Vue CLI plugin that provides version info feature",
   "keywords": [
     "Vue",
@@ -9,5 +9,11 @@
     "verb info"
   ],
   "license": "MIT",
-  "scripts": {}
+  "scripts": {
+    "changeset": "changeset",
+    "version": "changeset version && npm install"
+  },
+  "dependencies": {
+    "@changesets/cli": "^2.27.1"
+  }
 }

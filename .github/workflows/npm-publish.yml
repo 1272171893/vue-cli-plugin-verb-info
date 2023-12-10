@@ -3,31 +3,57 @@
 
 name: npm-publish
 
+# 触发时机，在 main 分支 push 操作触发
 on:
-  release:
-    types: [created]
+  push:
+    branches:
+      - main
 
+# 默认shell
+defaults:
+  run:
+    shell: bash
+
+# 任务，定义个changelog 的任务
 jobs:
-  build:
+  changelog:
+    # name:Changelog PR or Release
+    # 这里判断仓库owner是否是我自己，为了避免别人 fork 仓库触发，请自行修改
+    # if: ${{ github.repository_owner == 'nangongmoyan' }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
-        with:
-          node-version: 16
-      - run: npm ci
-      - run: npm test
+      # name:  当前 step 的名字
+      - name: Checkout # 获取分支的代码和提交记录
+        uses: actions/checkout@v3
 
-  publish-npm:
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
+      # 设置 Node
+      - name: Setup Node.js # 设置 Node.js 的环境
+        uses: actions/setup-node@v3
         with:
-          node-version: 16
-          registry-url: https://registry.npmjs.org/
-      - run: npm ci
-      - run: npm publish
+          node-version: "lts/*"
+          # cache: 'npm'
+
+      # 安装依赖
+      - name: Install dependencies
+        run: npm install
+
+      # 打包
+      - name: Build Packages
+        run: npm run build
+
+      # 这一步是最重要的。使用changesets/action自动创建 PR 或者发布
+      - name: Create Release Pull Request or Publish
+        id: changesets
+        uses: changesets/action@v1
+        with:
+          # 执行更新版本和发布的命令
+          version: npm run version
+          publish: npm exec changeset publish
+          commit: '[ci] release'
+          title: '[ci] release'
         env:
-          NODE_AUTH_TOKEN: ${{secrets.npm_token}}
+          # 这里需要几个 Token 变量
+          # GITHUB_TOKEN 是 CI 里自带的默认 token
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # NPM_TOKEN 需要稍后在 npm 网站生成。
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
